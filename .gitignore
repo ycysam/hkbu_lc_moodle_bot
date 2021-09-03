@@ -1,0 +1,9 @@
+#ignore chromedriver because it needs to update manually from time to time
+chromedriver.exe
+
+#ignore main start-up file because it changes depends on diffent tasks to perform
+main.py
+
+#Others
+__pycache__/
+.env
