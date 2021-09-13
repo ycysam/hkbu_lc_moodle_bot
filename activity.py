@@ -102,6 +102,7 @@ class Activity:
             print("<date restriction added>")
     
     def topic_reallocate(self, under_topic=""): # Toppic will move to the top by default
+        self.turn_editing_on()
         self.driver.execute_script("window.scrollTo(0, 0)")
         get_element_by_xpath(self.driver, 3, f"(//li[@id='section-{ Activity.topic_id }']//i)[1]").click() #Click on the anchor to be reallocate
         if under_topic == "":
