@@ -23,9 +23,9 @@ class CourseImport(Activity):
             get_element_by_xpath(self.driver, 1, "//input[@value='Next']").click() # Click on Next
             get_element_by_xpath(self.driver, 1, "//*[@id='backup-none-included']").click() # Uncheck all activity
             # Test topic name
-            topic_elems = self.driver.find_elements_by_xpath("//div[@class='form-check']//input[@type='checkbox'][starts-with(@id, 'id_setting_section_section')]/parent::label[text()][not(parent::input)]")
-            activity_elems = self.driver.find_elements_by_xpath("//div[@class='form-check']//input[@type='checkbox'][starts-with(@id, 'id_setting_activity')]/parent::label[text()][not(parent::input)]")
-            all_checkbox_elems = self.driver.find_elements_by_xpath("//div[@class='form-check']//input[@type='checkbox']/parent::label[text()][not(parent::input)]")
+            topic_elems = self.driver.find_elements_by_xpath("//label[starts-with(@for, 'id_setting_section')]")
+            activity_elems = self.driver.find_elements_by_xpath("//label[starts-with(@for, 'id_setting_activity_')]")
+            all_checkbox_elems = self.driver.find_elements_by_xpath("//label[starts-with(@for, 'id_setting_')]")
             # Construct dictionary topic_name:[act1, act2, act3...]
             d = {}
             current_topic = None
