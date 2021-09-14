@@ -101,12 +101,16 @@ class Activity:
             get_element_by_xpath(self.driver, 1, f"(//select[@name='x[minute]']/option[text()='{ date.strftime('%M') }'])[last()]").click()
             print("<date restriction added>")
     
-    def topic_reallocate(self, under_topic=""): # Toppic will move to the top by default
+    def topic_reallocate(self, under_topic="", top_or_bottom="bottom"): # Toppic will move to the top by default
         self.turn_editing_on()
         self.driver.execute_script("window.scrollTo(0, 0)")
         get_element_by_xpath(self.driver, 3, f"(//li[@id='section-{ Activity.topic_id }']//i)[1]").click() #Click on the anchor to be reallocate
         if under_topic == "":
-            get_element_by_xpath(self.driver, 2, "//a[@data-drop-target='section-1']").click()
+            if top_or_bottom == 'top':
+                get_element_by_xpath(self.driver, 2, "//a[@data-drop-target='section-1']").click()
+            else:
+                sid = get_element_by_xpath(self.driver, 1, "(//a[starts-with(normalize-space(text()), 'Topic ')]//ancestor::h3//parent::div[@class='content']//ul[@data-draggroups='resource' and count(li) = 1])[1]//ancestor::li[contains(@id, 'section-')]").get_attribute('id')
+                get_element_by_xpath(self.driver, 2, f"//a[starts-with(@data-drop-target, '{ sid }')]").click()
         else:
             topic_name = "To item \"{}\"".format(under_topic)
             get_element_by_xpath(self.driver, 2, f"//li/a[text()='{ topic_name }']/following::li[1]/a").click()
