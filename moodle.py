@@ -34,7 +34,7 @@ class Moodle:
         self.sections.iterate_sections(self.procedures)
     
     def resume_from_section(self, section):
-        self.section.resume_section(section)
+        self.sections.resume_section(section)
 
     def include_single_section(self, section):
         self.sections.include_only_section(section)
