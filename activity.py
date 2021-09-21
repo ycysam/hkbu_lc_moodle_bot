@@ -25,10 +25,9 @@ class Activity:
     def create_topic(self, topic_name, new=False):
         if not new:
             # Find the topic start with 'Topic ', and there are no activity under that topic
-            xpath = "(//a[starts-with(normalize-space(text()), 'Topic ')]//ancestor::h3//parent::div[@class='content']//ul[@data-draggroups='resource' and count(li) = 1])[1]//ancestor::li[contains(@id, 'section-')]"
-            empty_topic = get_element_by_xpath(self.driver, 3, xpath)
-            if empty_topic:
-                Activity.topic_id = empty_topic.get_attribute('id').split('-')[1]
+            topic_id = self.find_toppest_empty_topic_id()
+            if topic_id:
+                Activity.topic_id = topic_id
             else:
                 new = True
         if new:
@@ -109,13 +108,44 @@ class Activity:
             if top_or_bottom == 'top':
                 get_element_by_xpath(self.driver, 2, "//a[@data-drop-target='section-1']").click()
             else:
-                sid = get_element_by_xpath(self.driver, 1, "(//a[starts-with(normalize-space(text()), 'Topic ')]//ancestor::h3//parent::div[@class='content']//ul[@data-draggroups='resource' and count(li) = 1])[1]//ancestor::li[contains(@id, 'section-')]").get_attribute('id')
-                get_element_by_xpath(self.driver, 2, f"//a[starts-with(@data-drop-target, '{ sid }')]").click()
+                sid = self.find_toppest_empty_topic_id()
+                get_element_by_xpath(self.driver, 2, f"//a[starts-with(@data-drop-target, 'section-{ sid }')]").click()
         else:
             topic_name = "To item \"{}\"".format(under_topic)
             get_element_by_xpath(self.driver, 2, f"//li/a[text()='{ topic_name }']/following::li[1]/a").click()
         time.sleep(2)
         print("<topic reallocated>")
+    
+    def find_toppest_empty_topic_id(self):
+        self.turn_editing_on()
+        self.driver.implicitly_wait(3)
+        xpath = "(//a[starts-with(normalize-space(text()), 'Topic ')]//ancestor::h3//parent::div[@class='content']//ul[@data-draggroups='resource' and count(li) = 1])[1]//ancestor::li[contains(@id, 'section-')]"
+        empty_topic = self.driver.find_elements_by_xpath(xpath)
+        self.driver.implicitly_wait(0)
+        if empty_topic:
+            topic_id = empty_topic[0].get_attribute('id').split('-')[1]
+            return topic_id
+        else:
+            return None
+    
+    def find_all_empty_topic_ids(self):
+        self.turn_editing_on()
+        self.driver.implicitly_wait(3)
+        xpath = "//a[starts-with(normalize-space(text()), 'Topic ')]//ancestor::h3//parent::div[@class='content']//ul[@data-draggroups='resource' and count(li) = 1]//ancestor::li[contains(@id, 'section-')]"
+        empty_topics = self.driver.find_elements_by_xpath(xpath)
+        self.driver.implicitly_wait(0)
+        empty_topics_list = []
+        if empty_topics:
+            for et in empty_topics:
+                tid = et.get_attribute('id').split('-')[1]
+                empty_topics_list.append(int(tid))
+            print(empty_topics_list)
+            return empty_topics_list
+        else:
+            print("<No empty topic in this section, creating new one...>")
+            self.create_topic(topic_name='', new=True)
+            return self.find_all_empty_topic_ids()
+
 
     def __edit_activity(self, activity_name, feature):
         self.turn_editing_on()
