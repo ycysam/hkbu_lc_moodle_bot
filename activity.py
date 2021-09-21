@@ -76,6 +76,9 @@ class Activity:
         for topic, section_id in zip(topics, section_ids):
             if topic.text == topic_name:
                 return section_id.get_attribute('id').split('-')[1]
+
+    def set_topic_id(self, topic_id):
+        Activity.topic_id = topic_id
     
     def add_restricted_date(self, date, from_or_until):
         if isinstance(date, datetime.datetime):
@@ -104,15 +107,16 @@ class Activity:
         self.turn_editing_on()
         self.driver.execute_script("window.scrollTo(0, 0)")
         get_element_by_xpath(self.driver, 3, f"(//li[@id='section-{ Activity.topic_id }']//i)[1]").click() #Click on the anchor to be reallocate
+        sid = self.find_toppest_empty_topic_id()
         if under_topic == "":
             if top_or_bottom == 'top':
                 get_element_by_xpath(self.driver, 2, "//a[@data-drop-target='section-1']").click()
             else:
-                sid = self.find_toppest_empty_topic_id()
-                get_element_by_xpath(self.driver, 2, f"//a[starts-with(@data-drop-target, 'section-{ sid }')]").click()
+                if sid:
+                    get_element_by_xpath(self.driver, 2, f"//a[starts-with(@data-drop-target, 'section-{ sid }')]").click()
         else:
-            topic_name = "To item \"{}\"".format(under_topic)
-            get_element_by_xpath(self.driver, 2, f"//li/a[text()='{ topic_name }']/following::li[1]/a").click()
+            if sid:
+                get_element_by_xpath(self.driver, 2, f"//li/a[contains(text(), '{under_topic}')]/following::li[1]/a").click()
         time.sleep(2)
         print("<topic reallocated>")
     
