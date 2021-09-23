@@ -115,8 +115,11 @@ class Activity:
                 if sid:
                     get_element_by_xpath(self.driver, 2, f"//a[starts-with(@data-drop-target, 'section-{ sid }')]").click()
         else:
-            if sid:
-                get_element_by_xpath(self.driver, 2, f"//li/a[contains(text(), '{under_topic}')]/following::li[1]/a").click()
+            self.driver.implicitly_wait(3)
+            target = self.driver.find_elements_by_xpath(f"//li/a[contains(text(), '{under_topic}')]/following::li[1]/a")
+            if target:
+                target[-1].click()
+            self.driver.implicitly_wait(0)
         time.sleep(2)
         print("<topic reallocated>")
     
