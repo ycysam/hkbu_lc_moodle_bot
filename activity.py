@@ -86,7 +86,7 @@ class Activity:
             expand_all = self.driver.find_elements_by_xpath("//a[text()='Expand all']") #expand all link
             if expand_all:
                 time.sleep(1)
-                expand_all[0].click()
+                self.driver.execute_script("arguments[0].click();", expand_all[0])
             restrictions = len(self.driver.find_elements_by_xpath("//h3[@class='accesshide']"))
             if restrictions > 1:
                 print("<be careful, other restriction(s) already exist>")
