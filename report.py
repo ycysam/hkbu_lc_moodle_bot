@@ -6,11 +6,11 @@ from pprint import pprint
 
 class Report:
     timestamp = datetime.now().strftime('%Y%m%d%H%M%S')
-    def __init__(self, section, assignment_name):
+    def __init__(self, section, assignment_name, similarity_threshold):
         self.section = section # The section Object
         self.driver = Moodle.driver
         self.assignment_name = assignment_name
-        self.similarity_threshold = 30
+        self.similarity_threshold = similarity_threshold
         self.submission_report_name = f"./exported/nil_late_submission_{ Report.timestamp }.csv"
         self.similarity_report_name = f"./exported/similarity_over_{ Report.timestamp }.csv"
         self.records = [] # List of Record(s)
