@@ -174,6 +174,12 @@ class Activity:
         get_element_by_xpath(self.driver, 1, "//input[@type='button'][@value='Yes']").click() # Confirm delete
         print(f"<\"{activity_name}\" was deleted>")
     
+    def rename_activity(self, old_name, new_name):
+        edit_pen = get_element_by_xpath(self.driver, 1, f"//span[@class='instancename'][text()='{old_name}']/following::i[1]")
+        ActionChains(self.driver).move_to_element(edit_pen).click().send_keys(Keys.BACKSPACE).pause(1).send_keys(new_name).key_down(Keys.ENTER).perform()
+        time.sleep(1)
+        print(f"<activity renamed from \"{old_name}\" to \"{new_name}\">")
+
     def set_activity_avaliable_start_date(self, start_date):
         if isinstance(start_date, datetime.datetime):
             self.activity_ava_start_date = start_date
