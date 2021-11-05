@@ -37,8 +37,12 @@ class Report:
             uid = self.__get_uid_by_url(uid_url)
             #Get email of student
             std_email = get_element_by_xpath(self.driver, 1, f"//th/a[contains(@href, '{ uid }')]/parent::*/parent::*/td[2]").text
+            #Create credential (last name + last 3 digits of SID)
+            last_name = std_name.split()[0]
+            last_three_sid = std_email[5:8]
+            credential = last_name + last_three_sid
             #Create Record
-            self.records.append(Record(section_number, teacher_name, uid, std_name, std_email))
+            self.records.append(Record(section_number, credential, teacher_name, uid, std_name, std_email))
     
 
     def __update_submission_record(self):
@@ -74,11 +78,11 @@ class Report:
         with open(self.submission_report_name, newline='' ,mode='a+') as file:
             writer = csv.writer(file, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
             if os.stat(self.submission_report_name).st_size == 0:
-                writer.writerow(["Section", "Name", "Email", "Date", "Status", "Teacher", "Report time","Remarks"])
+                writer.writerow(["Section", "Credential", "Name", "Email", "Date", "Status", "Teacher", "Report time","Remarks"])
             for r in self.records:
                 if r.submission_time != None:
                     status = 'no submission' if r.submission_time == '--' else 'late submission'
-                    writer.writerow([r.section_number, r.name, r.email, r.submission_time, status, r.teacher_name, r.report_time, ""])
+                    writer.writerow([r.section_number, r.credential, r.name, r.email, r.submission_time, status, r.teacher_name, r.report_time, ""])
         print("<submission report updated>")
     
 
@@ -87,10 +91,10 @@ class Report:
         with open(self.similarity_report_name, newline='' ,mode='a+') as file:
             writer = csv.writer(file, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
             if os.stat(self.similarity_report_name).st_size == 0:
-                writer.writerow(["Section", "Name", "Email", "Percentage", "Teacher", "Report time","Remarks"])
+                writer.writerow(["Section", "Credential", "Name", "Email", "Percentage", "Teacher", "Report time","Remarks"])
             for r in self.records:
                 if r.similarity != None:
-                    writer.writerow([r.section_number, r.name, r.email, r.similarity, r.teacher_name, r.report_time, ""])
+                    writer.writerow([r.section_number, r.credential, r.name, r.email, r.similarity, r.teacher_name, r.report_time, ""])
         print("<similarity report updated>")
     
 
@@ -109,8 +113,9 @@ class Report:
 
 
 class Record:
-    def __init__(self, section_number, teacher_name, uid, student_name, email, similarity=None, submission_time=None, report_time=None):
+    def __init__(self, section_number, credential, teacher_name, uid, student_name, email, similarity=None, submission_time=None, report_time=None):
         self.section_number = section_number
+        self.credential = credential
         self.teacher_name = teacher_name
         self.uid = uid
         self.name = student_name
