@@ -28,15 +28,14 @@ class Sections:
         return f"https://buelearning.hkbu.edu.hk/course/search.php?search={ self.course_code }%20{ self.year }%20{ self.semester }&perpage=all"
 
     def resume_section(self, from_section_number):
-        from_section_url = self.__get_section_url_by_section_number(from_section_number)
         #define filter
         def filter_section(section):
-            if section.section_url >= from_section_url:
+            if section.section_number >= from_section_number:
                 return True
             else:
                 return False
         new_list = list(filter(filter_section, self.sections))
-        self.sections = sorted(new_list, key=lambda obj: obj.section_url)
+        self.sections = sorted(new_list, key=lambda obj: obj.section_number)
     
     def exclude_section(self, exc_section):
         #define filter
@@ -46,7 +45,7 @@ class Sections:
             else:
                 return True
         new_list = list(filter(filter_section, self.sections))
-        self.sections = sorted(new_list, key=lambda obj: obj.section_url)
+        self.sections = sorted(new_list, key=lambda obj: obj.section_number)
 
     def include_only_section(self, inc_section):
         #define filter
@@ -56,7 +55,7 @@ class Sections:
             else:
                 return False
         new_list = list(filter(filter_section, self.sections))
-        self.sections = sorted(new_list, key=lambda obj: obj.section_url)
+        self.sections = sorted(new_list, key=lambda obj: obj.section_number)
 
     def __init_sections(self):
         is_login = get_element_by_xpath(self.driver, 30, "//*[@id='page-site-index']") #set to 30 second because wait for 2FA
@@ -72,14 +71,14 @@ class Sections:
                 teacher_elem = self.driver.find_elements_by_xpath(f"//a[@href='{ section_url }']//ancestor::div[@class='info']//following-sibling::div[@class='content']/ul[@class='teachers']/li/a")
                 teacher_name = teacher_elem[0].text if teacher_elem else ""
                 self.sections.append(Section(section_name, section_number, section_url, teacher_name))
-            sections = sorted(self.sections, key=lambda obj: obj.section_url)
+            sections = sorted(self.sections, key=lambda obj: obj.section_number)
             return sections
 
     def __get_section_number(self, section_name):
         pattern = '[(]Section (.+)[)]'
         match = re.search(pattern, section_name)
         if match:
-            return match.group(1)
+            return int(match.group(1))
     
     def __get_section_url_by_section_number(self, section_number):
         for section in self.sections:
