@@ -71,14 +71,28 @@ class Sections:
                 teacher_elem = self.driver.find_elements_by_xpath(f"//a[@href='{ section_url }']//ancestor::div[@class='info']//following-sibling::div[@class='content']/ul[@class='teachers']/li/a")
                 teacher_name = teacher_elem[0].text if teacher_elem else ""
                 self.sections.append(Section(section_name, section_number, section_url, teacher_name))
-            sections = sorted(self.sections, key=lambda obj: obj.section_number)
-            return sections
+            self.sections = sorted(self.sections, key=lambda obj: obj.section_number)
 
     def __get_section_number(self, section_name):
         pattern = '[(]Section (.+)[)]'
         match = re.search(pattern, section_name)
+        section_num_str = match.group(1)
         if match:
-            return int(match.group(1))
+            #combined section processing
+            if section_num_str.find('/') >= 0:
+                #first section
+                first = section_num_str.split('/')[0] + '.'
+                #remaining section
+                remaining_lt = []
+                for section in section_num_str.split('/')[1:]:
+                    if len(section) == 1:
+                        remaining_lt.append('0' + section)
+                    else:
+                        remaining_lt.append(section)
+                remaining = ''.join(remaining_lt)
+                return float(first + remaining)
+            else:
+                return float(match.group(1))
     
     def __get_section_url_by_section_number(self, section_number):
         for section in self.sections:
