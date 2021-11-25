@@ -22,10 +22,12 @@ class Moodle:
         is_logout = not bool(Moodle.driver.find_elements_by_xpath("//button[text()='Log out']"))
         if is_logout:
             get_element_by_xpath(Moodle.driver, 2, "//*[@id='ssoidLogin']").click() # orange button (login from staff)
-            get_element_by_xpath(Moodle.driver, 2, "//*[@id='ssoid']").send_keys(self.ssoid) # enter SSOID
-            get_element_by_xpath(Moodle.driver, 2, "//*[@id='btn_next']").click() # click next
-            get_element_by_xpath(Moodle.driver, 2, "//*[@id='pwd']").send_keys(self.ssopw) # enter SSOID PWD
-            get_element_by_xpath(Moodle.driver, 2, "//*[@id='btn_sign_in']").click() # click sign in
+            require_sso_login = bool(Moodle.driver.find_elements_by_id("ssoid"))
+            if require_sso_login:
+                get_element_by_xpath(Moodle.driver, 2, "//*[@id='ssoid']").send_keys(self.ssoid) # enter SSOID
+                get_element_by_xpath(Moodle.driver, 2, "//*[@id='btn_next']").click() # click next
+                get_element_by_xpath(Moodle.driver, 2, "//*[@id='pwd']").send_keys(self.ssopw) # enter SSOID PWD
+                get_element_by_xpath(Moodle.driver, 2, "//*[@id='btn_sign_in']").click() # click sign in
         else:
             get_element_by_xpath(Moodle.driver, 1, "//button[text()='Cancel']").click()
     
